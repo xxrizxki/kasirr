@@ -1,0 +1,19 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\KasirController;
+use App\Http\Controllers\PesananController;
+use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\HargaController;
+
+Route::get('/', [KasirController::class, 'index'])->name('kasir');
+Route::post('/pesanan', [PesananController::class, 'store'])->name('pesanan.store');
+Route::get('/pesanan', [PesananController::class, 'index'])->name('pesanan.index');
+Route::get('/pesanan/{order}', [PesananController::class, 'show'])->name('pesanan.show');
+Route::post('/pesanan/{order}/batal', [PesananController::class, 'batal'])->name('pesanan.batal');
+
+Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
+
+Route::get('/admin/harga', [HargaController::class, 'edit'])->name('admin.harga.edit');
+Route::put('/admin/harga', [HargaController::class, 'update'])->name('admin.harga.update');
+Route::post('/admin/harga/massal', [HargaController::class, 'massal'])->name('admin.harga.massal');
