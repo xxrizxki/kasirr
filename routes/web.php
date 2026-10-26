@@ -7,7 +7,8 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\HargaController;
 use App\Http\Controllers\AuthController;
 
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login.form');
+Route::post('/login', [AuthController::class, 'login'])->name('login')->middleware('throttle:5,1');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/', [KasirController::class, 'index'])->name('kasir');

@@ -9,6 +9,14 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    public function showLogin()
+    {
+        if (Auth::check()) {
+            return redirect()->intended('/');
+        }
+        return view('auth.login');
+    }
+
     public function login(Request $request)
     {
         $request->validate([
@@ -17,16 +25,18 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($request->only('email', 'password'))) {
+            $request->session()->regenerate();
             return redirect()->intended('/');
         }
 
-        return back()->withErrors(['email' => 'Invalid credentials']);
+        return back()->withErrors(['email' => 'Kredensial tidak valid']);
     }
 
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
-        return redirect('/');
+        $request->session()->regenerateToken();
+        return redirect('/login');
     }
 }
