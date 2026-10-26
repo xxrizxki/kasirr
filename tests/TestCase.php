@@ -3,10 +3,19 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 abstract class TestCase extends BaseTestCase
 {
-    //
+    use RefreshDatabase;
+
+    protected $seed = true;
+
+    protected function seeder()
+    {
+        return \Database\Seeders\DatabaseSeeder::class;
+    }
+
     protected function setUpTraits()
     {
         $this->pastikanDatabaseTest();

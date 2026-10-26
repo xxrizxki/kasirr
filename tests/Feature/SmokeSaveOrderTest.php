@@ -64,18 +64,13 @@ class SmokeSaveOrderTest extends TestCase
         $size = Size::first();
         $old_price = $size->harga;
         
-        // Ubah harga via DB (simulate manual update)
         $size->update(['harga' => 37000]);
-
-        // Verifikasi log tercatat (trigger harus mencatat)
         $log = PriceLog::where('size_id', $size->id)
                       ->where('harga_lama', $old_price)
                       ->where('harga_baru', 37000)
                       ->first();
 
         $this->assertNotNull($log, "Price log tidak tercatat oleh trigger");
-        
-        // Reset
         $size->update(['harga' => $old_price]);
     }
 

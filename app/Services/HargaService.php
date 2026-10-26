@@ -38,4 +38,3 @@ class HargaService
         DB::statement('CALL sp_ubah_harga_massal(?, ?)', [$kategori->id, $selisih]);
     }
 }
-}

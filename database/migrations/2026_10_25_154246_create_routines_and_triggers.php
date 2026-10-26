@@ -7,6 +7,16 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Clean up existing routines to avoid conflicts
+        DB::unprepared("DROP FUNCTION IF EXISTS fn_subtotal");
+        DB::unprepared("DROP FUNCTION IF EXISTS fn_total_pesanan");
+        DB::unprepared("DROP FUNCTION IF EXISTS fn_format_kode");
+        DB::unprepared("DROP PROCEDURE IF EXISTS sp_simpan_pesanan");
+        DB::unprepared("DROP PROCEDURE IF EXISTS sp_batalkan_pesanan");
+        DB::unprepared("DROP PROCEDURE IF EXISTS sp_rekap_harian");
+        DB::unprepared("DROP PROCEDURE IF EXISTS sp_ubah_harga_massal");
+        DB::unprepared("DROP TRIGGER IF EXISTS trg_sizes_log_harga");
+
         // 6.1 Function
         DB::unprepared("
             CREATE FUNCTION fn_subtotal(p_qty INT, p_harga INT)
