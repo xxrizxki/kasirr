@@ -27,7 +27,7 @@ class AuthenticationTest extends TestCase
             'password' => 'password123',
         ]);
 
-        $response->assertRedirect('/');
+        $response->assertRedirect(route('kasir'));
         $this->assertAuthenticatedAs($user);
     }
 
@@ -169,6 +169,42 @@ class AuthenticationTest extends TestCase
         $this->actingAs($user);
 
         $response = $this->get('/login');
-        $response->assertRedirect('/');
+        $response->assertRedirect(route('kasir'));
+    }
+
+    public function test_demo_credentials_login()
+    {
+        $response = $this->post('/login', [
+            'email' => 'admin123@gmail.com',
+            'password' => 'admin123',
+        ]);
+
+        $response->assertRedirect(route('kasir'));
+        $this->assertAuthenticatedAs(User::where('email', 'admin123@gmail.com')->first());
+    }
+
+    public function test_guest_cannot_access_kasir()
+    {
+        $response = $this->get('/');
+        $response->assertRedirect('/login');
+    }
+
+    public function test_guest_cannot_access_pesanan_index()
+    {
+        $response = $this->get('/pesanan');
+        $response->assertRedirect('/login');
+    }
+
+    public function test_guest_cannot_access_laporan()
+    {
+        $response = $this->get('/laporan');
+        $response->assertRedirect('/login');
+    }
+
+    public function test_authenticated_can_access_kasir()
+    {
+        $user = User::factory()->create(['role' => 'admin']);
+        $response = $this->actingAs($user)->get('/');
+        $response->assertStatus(200);
     }
 }
