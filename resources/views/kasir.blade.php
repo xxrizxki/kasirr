@@ -80,15 +80,17 @@ document.addEventListener('alpine:init', () => {
           }),
         });
         const d = await r.json();
-        if (r.ok && d.ok) {
+        if (r.ok && d && d.ok) {
           this.tampil('Tersimpan: ' + d.kode + ' · ' + this.rupiah(d.total));
           this.qty = {}; 
           this.nama = '';
+        } else if (r.status === 422 && d && d.errors) {
+          this.tampil('Validasi gagal: ' + Object.values(d.errors).flat().join('; '));
         } else {
-          this.tampil(d.pesan || d.message || 'Gagal menyimpan pesanan');
+          this.tampil((d && (d.pesan || d.message)) || 'Gagal menyimpan pesanan (HTTP ' + r.status + ')');
         }
       } catch (e) {
-        this.tampil('Koneksi bermasalah, coba lagi');
+        this.tampil('Error: ' + (e.message || 'Koneksi bermasalah'));
       } finally {
         this.mengirim = false;
       }
