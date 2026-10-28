@@ -29,13 +29,16 @@
       @foreach($o->items as $i)
         <div><span>{{ $i->size->category->nama }} {{ $i->size->nama }} × {{ $i->qty }}</span><span>Rp {{ number_format($i->subtotal, 0, ',', '.') }}</span></div>
       @endforeach
-      @if($o->isSelesai())
-        <form method="POST" action="{{ route('pesanan.batal', $o) }}" style="margin-top:8px">
-          @csrf
-          <button type="button" class="btn g s" x-show="!yakin" @click="yakin = true">Batalkan pesanan</button>
-          <button type="submit" class="btn g s" x-show="yakin" x-cloak>Yakin batalkan?</button>
-        </form>
-      @endif
+      <div style="margin-top:8px; display:flex; gap:8px">
+        <a href="{{ route('pesanan.show', $o) }}" class="btn g s">Buka detail</a>
+        @if($o->isSelesai())
+          <form method="POST" action="{{ route('pesanan.batal', $o) }}" style="display:flex">
+            @csrf
+            <button type="button" class="btn g s" x-show="!yakin" @click="yakin = true">Batalkan pesanan</button>
+            <button type="submit" class="btn g s" x-show="yakin" x-cloak>Yakin batalkan?</button>
+          </form>
+        @endif
+      </div>
     </div>
   </div>
 @empty
