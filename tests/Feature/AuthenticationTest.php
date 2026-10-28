@@ -172,17 +172,6 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('kasir'));
     }
 
-    public function test_demo_credentials_login()
-    {
-        $response = $this->post('/login', [
-            'email' => 'admin123@gmail.com',
-            'password' => 'admin123',
-        ]);
-
-        $response->assertRedirect(route('kasir'));
-        $this->assertAuthenticatedAs(User::where('email', 'admin123@gmail.com')->first());
-    }
-
     public function test_guest_cannot_access_kasir()
     {
         $response = $this->get('/');

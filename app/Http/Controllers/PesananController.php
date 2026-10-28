@@ -6,6 +6,7 @@ use App\Http\Requests\SimpanPesananRequest;
 use App\Models\Order;
 use App\Services\PesananGagalException;
 use App\Services\PesananService;
+use App\Support\PesanError;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -50,7 +51,7 @@ class PesananController extends Controller
             $this->service->batalkan($order, $request->input('alasan'));
             return back()->with('pesan', 'Pesanan ' . $order->kode_pesanan . ' dibatalkan');
         } catch (\Throwable $e) {
-            return back()->withErrors(['server' => $e->getMessage()]);
+            return back()->withErrors(['server' => PesanError::dari($e)]);
         }
     }
 }

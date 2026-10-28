@@ -13,7 +13,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CategorySeeder::class,
             SizeSeeder::class,
-            DemoSeeder::class,
         ]);
     }
 }

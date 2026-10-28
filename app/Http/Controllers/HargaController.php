@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\PriceLog;
 use App\Services\HargaService;
+use App\Support\PesanError;
 use Illuminate\Http\Request;
 
 class HargaController extends Controller
@@ -33,7 +34,7 @@ class HargaController extends Controller
             $n = $this->service->ubahBanyak($perubahan);
             return back()->with('pesan', "$n harga diubah");
         } catch (\Throwable $e) {
-            return back()->withErrors(['server' => 'Dibatalkan (rollback): ' . $e->getMessage()]);
+            return back()->withErrors(['server' => PesanError::dari($e)]);
         }
     }
 
@@ -49,7 +50,7 @@ class HargaController extends Controller
             $this->service->ubahMassal($kategori, (int) $request->selisih);
             return back()->with('pesan', 'Harga kategori diubah');
         } catch (\Throwable $e) {
-            return back()->withErrors(['server' => $e->getMessage()]);
+            return back()->withErrors(['server' => PesanError::dari($e)]);
         }
     }
 }
