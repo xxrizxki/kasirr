@@ -18,6 +18,28 @@ class SmokeSaveOrderTest extends TestCase
         $this->user = User::factory()->create(['role' => 'admin']);
     }
 
+    protected function buatPesanan($nama = 'Uji', $items = null): Order
+    {
+        if (!$items) {
+            $size1 = Size::whereHas('category', fn($q) => $q->where('kode', 'anak'))
+                         ->where('nama', 'No 2')->first();
+            $size2 = Size::whereHas('category', fn($q) => $q->where('kode', 'dewasa'))
+                         ->where('nama', 'M')->first();
+            $items = [
+                ['size_id' => $size1->id, 'qty' => 2],
+                ['size_id' => $size2->id, 'qty' => 1],
+            ];
+        }
+
+        $response = $this->actingAs($this->user)->postJson('/pesanan', [
+            'nama_pembeli' => $nama,
+            'items' => $items,
+        ]);
+
+        $this->assertTrue($response->json('ok'), 'Gagal membuat pesanan');
+        return Order::where('kode_pesanan', $response->json('kode'))->first();
+    }
+
     public function test_save_order_and_verify_total()
     {
         $size1 = Size::whereHas('category', fn($q) => $q->where('kode', 'anak'))
@@ -50,16 +72,14 @@ class SmokeSaveOrderTest extends TestCase
         $this->assertNotNull($order, "Order tidak ditemukan di database");
         $this->assertEquals('Budi Santoso', $order->nama_pembeli);
         $this->assertEquals($expected_total, $order->total_harga);
-        $this->assertEquals(3, $order->total_item); // 2 + 1
+        $this->assertEquals(3, $order->total_item);
         $this->assertEquals('selesai', $order->status);
         $this->assertNotNull($order->created_at);
-
-        return $order;
     }
 
     public function test_cancel_order()
     {
-        $order = $this->test_save_order_and_verify_total();
+        $order = $this->buatPesanan('Uji Batal');
 
         $response = $this->actingAs($this->user)->post(route('pesanan.batal', $order));
         
@@ -87,9 +107,8 @@ class SmokeSaveOrderTest extends TestCase
 
     public function test_laporan_shows_completed_orders()
     {
-        // Save 2 orders
-        $this->test_save_order_and_verify_total();
-        $this->test_save_order_and_verify_total();
+        $this->buatPesanan('Pesanan 1');
+        $this->buatPesanan('Pesanan 2');
 
         $response = $this->actingAs($this->user)->get('/laporan');
         $response->assertStatus(200);

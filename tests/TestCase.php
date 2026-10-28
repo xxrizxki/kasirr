@@ -3,17 +3,16 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTruncation;
 
 abstract class TestCase extends BaseTestCase
 {
-    use RefreshDatabase;
+    use DatabaseTruncation;
 
-    protected $seed = true;
-
-    protected function seeder()
+    protected function setUp(): void
     {
-        return \Database\Seeders\DatabaseSeeder::class;
+        parent::setUp();
+        $this->seed([\Database\Seeders\CategorySeeder::class, \Database\Seeders\SizeSeeder::class]);
     }
 
     protected function setUpTraits()
