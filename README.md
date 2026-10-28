@@ -1,58 +1,146 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Hitung Gamis: Aplikasi Kalkulator Kasir
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi untuk menghitung belanjaan dan mencatat riwayat penjualan jubah dalam 3 kategori.
 
-## About Laravel
+## Prasyarat
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.2+
+- Laravel 13
+- MySQL 8.0+
+- Composer
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Persiapan
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 1. Buat database
 
-## Learning Laravel
+Buka MySQL client (misalnya HeidiSQL di Laragon) dan jalankan:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```sql
+CREATE DATABASE IF NOT EXISTS hitung_gamis      CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS hitung_gamis_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Konfigurasi `.env` dan `.env.testing`
 
-## Contributing
+Edit `.env`:
+```dotenv
+APP_NAME="Hitung Gamis"
+APP_ENV=local
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=hitung_gamis
+DB_USERNAME=root
+DB_PASSWORD=(password Laragon)
+APP_TIMEZONE=Asia/Jakarta
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Buat `.env.testing` (salin dari `.env.testing.example`, isi dengan nilai dari `.env`):
+```dotenv
+APP_ENV=testing
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=hitung_gamis_test
+DB_USERNAME=root
+DB_PASSWORD=(password Laragon)
+```
 
-## Code of Conduct
+### 3. Install dependencies dan setup
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+composer install
+php artisan key:generate
+```
 
-## Security Vulnerabilities
+### 4. Migrasi tabel
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan migrate
+```
 
-## License
+### 5. Seed kategori dan ukuran
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan db:seed
+```
+
+### 6. Buat akun admin
+
+Isi `ADMIN_EMAIL` dan `ADMIN_PASSWORD` (minimum 12 karakter) di `.env`, lalu:
+
+```bash
+php artisan db:seed --class=AdminSeeder
+```
+
+### 7. Jalankan aplikasi
+
+```bash
+php artisan serve
+```
+
+Buka `http://localhost:8000` di browser.
+
+## Testing
+
+Persiapan testing (hanya sekali):
+
+```bash
+php artisan migrate:fresh --seed --env=testing
+```
+
+Jalankan test:
+
+```bash
+php artisan test
+```
+
+## Fitur utama
+
+- **Kasir**: pilih kategori, tekan +/- per ukuran, lihat total, simpan pesanan
+- **Riwayat pesanan**: daftar pesanan, filter tanggal dan status, detail, batalkan
+- **Laporan harian**: rekap penjualan per hari
+- **Admin - Harga**: ubah harga all/one per kategori, toggle aktif/nonaktif, riwayat
+- **Admin - CRUD**: kelola kategori, ukuran, riwayat harga per ukuran
+
+## Arsitektur database
+
+| Komponen | Deskripsi |
+|---|---|
+| `categories` | Kategori jubah: anak, dewasa, luar |
+| `sizes` | Ukuran per kategori dengan harga |
+| `orders` | Pesanan dengan total harga dan status (selesai/batal) |
+| `order_items` | Item dalam pesanan, harga satuan dicopy dari `sizes` |
+| `price_logs` | Log otomatis setiap kali harga berubah (trigger) |
+
+## Procedure dan Function
+
+| Nama | Fungsi |
+|---|---|
+| `fn_subtotal(qty, harga)` | Hitung subtotal satu item |
+| `fn_total_pesanan(order_id)` | Hitung total pesanan |
+| `fn_format_kode(id, tanggal)` | Format kode pesanan: `INV-YYYYMMDD-NNNNN` |
+| `sp_simpan_pesanan(nama, catatan, items, @order_id)` | Simpan pesanan (atomic transaction) |
+| `sp_batalkan_pesanan(order_id, alasan)` | Batalkan pesanan (ubah status, jangan hapus) |
+| `sp_rekap_harian(dari, sampai)` | Rekap penjualan per hari (hanya status selesai) |
+| `sp_ubah_harga_massal(category_id, selisih)` | Naik/turun harga satu kategori |
+| `trg_sizes_log_harga` | Trigger: log otomatis ke `price_logs` saat harga berubah |
+
+## Stack
+
+- **Backend**: Laravel 13, PHP 8.3
+- **Database**: MySQL 8.0 dengan stored procedure dan trigger
+- **Frontend**: Blade, Alpine.js (CDN), CSS custom (`public/css/gamis.css`)
+- **Auth**: Middleware sederhana (role: user, admin)
+- **Testing**: Pest/PHPUnit dengan database MySQL test
+
+## Catatan
+
+- Aplikasi memakai timezone **Asia/Jakarta** (UTC+7).
+- Zona waktu MySQL koneksi juga di-set ke `+07:00`.
+- Semua pesanan disimpan lewat stored procedure dengan `START TRANSACTION` dan `ROLLBACK` otomatis jika ada error.
+- Harga di `order_items.harga_satuan` **dicopy** saat transaksi, tidak referensi `sizes.harga`.
+- Pesanan tidak pernah dihapus, hanya dibatalkan.
+- Laporan hanya menghitung pesanan berstatus `selesai`.
