@@ -174,8 +174,19 @@ class AuthenticationTest extends TestCase
 
     public function test_guest_cannot_access_kasir()
     {
+        // Skenario 14: Guest diarahkan 302 ke login (bukan 403)
         $response = $this->get('/');
+        $response->assertStatus(302);
         $response->assertRedirect('/login');
+    }
+
+    public function test_regular_user_cannot_access_admin_harga()
+    {
+        // Skenario 14: User biasa ditolak 403 di /admin/*
+        $user = User::factory()->create(['role' => 'user']);
+
+        $response = $this->actingAs($user)->get('/admin/harga');
+        $response->assertStatus(403);
     }
 
     public function test_guest_cannot_access_pesanan_index()

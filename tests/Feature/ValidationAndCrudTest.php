@@ -30,17 +30,21 @@ class ValidationAndCrudTest extends TestCase
         $this->assertEquals($originalHarga, $size->fresh()->harga);
     }
 
-    public function test_harga_service_negative_rollback()
+    public function test_harga_service_with_one_negative_rolls_back_all()
     {
-        $size = Size::first();
-        $originalHarga = $size->harga;
+        $category = \App\Models\Category::first();
+        $sizes = $category->sizes;
+        $originalHargas = $sizes->pluck('harga', 'id')->all();
         
         $response = $this->actingAs($this->admin)->put('/admin/harga', [
-            'harga' => [$size->id => -5000],
+            'harga' => [$sizes->first()->id => -5000],
         ]);
         
         $response->assertSessionHasErrors('server');
-        $this->assertEquals($originalHarga, $size->fresh()->harga);
+        // Assert semua harga di kategori tidak berubah
+        foreach ($sizes as $size) {
+            $this->assertEquals($originalHargas[$size->id], $size->fresh()->harga);
+        }
     }
 
     public function test_crud_kategori_create()
