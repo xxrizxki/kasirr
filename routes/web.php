@@ -5,6 +5,8 @@ use App\Http\Controllers\KasirController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\HargaController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SizeController;
 use App\Http\Controllers\AuthController;
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login.form')->middleware('guest');
@@ -20,8 +22,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
 });
 
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/harga', [HargaController::class, 'edit'])->name('admin.harga.edit');
-    Route::put('/admin/harga', [HargaController::class, 'update'])->name('admin.harga.update');
-    Route::post('/admin/harga/massal', [HargaController::class, 'massal'])->name('admin.harga.massal');
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('harga', [HargaController::class, 'edit'])->name('harga.edit');
+    Route::put('harga', [HargaController::class, 'update'])->name('harga.update');
+    Route::post('harga/massal', [HargaController::class, 'massal'])->name('harga.massal');
+    Route::resource('kategori', CategoryController::class)->except('show')->parameters(['kategori' => 'category']);
+    Route::resource('ukuran', SizeController::class)->except('show')->parameters(['ukuran' => 'size']);
+    Route::get('ukuran/{size}/riwayat-harga', [SizeController::class, 'riwayat'])->name('ukuran.riwayat');
 });
