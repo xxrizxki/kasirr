@@ -18,7 +18,7 @@ class SimpanPesananRequest extends FormRequest
             'items.*.size_id' => 'required|integer|exists:sizes,id',
             'items.*.qty' => 'required|integer|min:1|max:999',
             'nama_pembeli' => 'nullable|string|max:100',
-            'catatan' => 'nullable|string|max:255',
+            'catatan' => 'nullable|string|max:140',
         ];
     }
 }

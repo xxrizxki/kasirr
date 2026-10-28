@@ -47,6 +47,10 @@ class PesananController extends Controller
 
     public function batal(Request $request, Order $order): RedirectResponse
     {
+        $request->validate([
+            'alasan' => 'nullable|string|max:100',
+        ], [], [], ['server' => 'Validasi gagal']);
+        
         try {
             $this->service->batalkan($order, $request->input('alasan'));
             return back()->with('pesan', 'Pesanan ' . $order->kode_pesanan . ' dibatalkan');
