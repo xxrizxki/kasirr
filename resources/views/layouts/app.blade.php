@@ -31,8 +31,6 @@
   @yield('isi')
 </main>
 
-@yield('bar') {{-- bar bawah khusus halaman kasir --}}
-
 @if(session('pesan'))
   <div class="toast" x-data="{ s: true }" x-show="s" x-init="setTimeout(() => s = false, 2600)">{{ session('pesan') }}</div>
 @endif

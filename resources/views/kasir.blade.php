@@ -20,23 +20,20 @@
       </div>
     </div>
   </template>
-</div>
-@endsection
 
-@section('bar')
-<div class="bar"><div>
-  <div class="sub">
-    <template x-for="c in kategoriTerpilih" :key="c.id">
-      <span x-text="c.nama + ': ' + c.jumlah"></span>
-    </template>
-  </div>
-  <div class="tot"><span class="mut" x-text="totalItem + ' potong'"></span><strong x-text="rupiah(totalHarga)"></strong></div>
-  <div class="bt">
-    <input type="text" x-model="nama" maxlength="100" placeholder="Nama pembeli (opsional)" aria-label="Nama pembeli">
-    <button type="button" class="btn" :disabled="totalItem === 0 || mengirim" @click="simpan()">Simpan</button>
-    <button type="button" class="btn g" @click="kosongkan()">Kosongkan</button>
-  </div>
-</div></div>
+  <div class="bar"><div>
+    <div class="sub">
+      <template x-for="c in kategoriTerpilih" :key="c.id">
+        <span x-text="c.nama + ': ' + c.jumlah"></span>
+      </template>
+    </div>
+    <div class="tot"><span class="mut" x-text="totalItem + ' potong'"></span><strong x-text="rupiah(totalHarga)"></strong></div>
+    <div class="bt">
+      <input type="text" x-model="nama" maxlength="100" placeholder="Nama pembeli (opsional)" aria-label="Nama pembeli">
+      <button type="button" class="btn" :disabled="totalItem === 0 || mengirim" @click="simpan()">Simpan</button>
+      <button type="button" class="btn g" @click="kosongkan()">Kosongkan</button>
+    </div>
+  </div></div>
 
   <div class="toast" x-show="pesan" x-text="pesan" x-cloak></div>
 </div>
