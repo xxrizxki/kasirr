@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Order;
+use App\Support\PesanError;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
@@ -22,7 +23,7 @@ class PesananService
                 $nama, $catatan, json_encode($gabung),
             ]);
         } catch (QueryException $e) {
-            throw new PesananGagalException($e->errorInfo[2] ?? 'Gagal menyimpan pesanan', 0, $e);
+            throw new PesananGagalException(PesanError::dari($e), 0, $e);
         }
 
         $id = DB::selectOne('SELECT @order_id AS id')->id;
