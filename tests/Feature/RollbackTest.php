@@ -69,7 +69,7 @@ class RollbackTest extends TestCase
 
     public function test_cancel_order_twice_fails()
     {
-        $order = Order::factory()->create(['status' => 'selesai']);
+        $order = $this->buatPesanan('Uji Cancel Twice');
         
         // Batalkan pertama kali
         $response1 = $this->actingAs($this->user)->post(route('pesanan.batal', $order));

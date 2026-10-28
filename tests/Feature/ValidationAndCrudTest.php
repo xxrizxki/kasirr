@@ -82,19 +82,32 @@ class ValidationAndCrudTest extends TestCase
 
     public function test_pesanan_show_returns_200()
     {
-        $order = \App\Models\Order::factory()->create();
+        $user = User::factory()->create(['role' => 'admin']);
+        $size = Size::first();
         
-        $response = $this->actingAs($this->admin)->get("/pesanan/$order->id");
-        $response->assertStatus(200);
-        $response->assertViewHas('order');
+        $response = $this->actingAs($user)->postJson('/pesanan', [
+            'nama_pembeli' => 'Uji Show',
+            'items' => [['size_id' => $size->id, 'qty' => 1]],
+        ]);
+        
+        $order = \App\Models\Order::where('kode_pesanan', $response->json('kode'))->first();
+        
+        $viewResponse = $this->actingAs($user)->get("/pesanan/$order->id");
+        $viewResponse->assertStatus(200);
+        $viewResponse->assertViewHas('order');
     }
 
     public function test_relasi_order_items_size_category()
     {
-        $order = \App\Models\Order::factory()
-            ->has(\App\Models\OrderItem::factory()->count(2))
-            ->create();
+        $user = User::factory()->create(['role' => 'admin']);
+        $size = Size::first();
         
+        $response = $this->actingAs($user)->postJson('/pesanan', [
+            'nama_pembeli' => 'Uji Relasi',
+            'items' => [['size_id' => $size->id, 'qty' => 1]],
+        ]);
+        
+        $order = \App\Models\Order::where('kode_pesanan', $response->json('kode'))->first();
         $order->load('items.size.category');
         
         foreach ($order->items as $item) {
@@ -134,10 +147,25 @@ class ValidationAndCrudTest extends TestCase
 
     public function test_rekap_harian_excludes_cancelled()
     {
-        $order1 = \App\Models\Order::factory()->create(['status' => 'selesai']);
-        $order2 = \App\Models\Order::factory()->create(['status' => 'batal']);
+        $user = User::factory()->create(['role' => 'admin']);
+        $size = Size::first();
         
-        $response = $this->actingAs($this->admin)->get('/laporan');
+        // Buat pesanan selesai
+        $this->actingAs($user)->postJson('/pesanan', [
+            'nama_pembeli' => 'Selesai',
+            'items' => [['size_id' => $size->id, 'qty' => 1]],
+        ]);
+        
+        // Buat pesanan lalu batalkan
+        $response = $this->actingAs($user)->postJson('/pesanan', [
+            'nama_pembeli' => 'Batal',
+            'items' => [['size_id' => $size->id, 'qty' => 1]],
+        ]);
+        
+        $order = \App\Models\Order::where('kode_pesanan', $response->json('kode'))->first();
+        $this->actingAs($user)->post(route('pesanan.batal', $order));
+        
+        $response = $this->actingAs($user)->get('/laporan');
         $response->assertStatus(200);
         
         $rekap = $response->viewData('rekap');
