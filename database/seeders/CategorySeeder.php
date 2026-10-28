@@ -16,7 +16,9 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($kategori as $k) {
-            DB::table('categories')->updateOrInsert(['kode' => $k['kode']], $k);
+            DB::table('categories')->insertOrIgnore(
+                array_merge($k, ['created_at' => now(), 'updated_at' => now()])
+            );
         }
     }
 }

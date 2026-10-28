@@ -31,10 +31,15 @@ class SizeSeeder extends Seeder
         ];
 
         foreach ($ukuran as $u) {
-            DB::table('sizes')->updateOrInsert(
-                ['category_id' => $u['cat'], 'nama' => $u['nama']],
-                ['harga' => $u['harga'], 'urutan' => $u['urutan'], 'is_active' => true]
-            );
+            DB::table('sizes')->insertOrIgnore([
+                'category_id' => $u['cat'],
+                'nama' => $u['nama'],
+                'harga' => $u['harga'],
+                'urutan' => $u['urutan'],
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
     }
 }

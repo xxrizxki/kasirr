@@ -20,8 +20,10 @@ class SmokeSaveOrderTest extends TestCase
 
     public function test_save_order_and_verify_total()
     {
-        $size1 = Size::first(); // No 2, anak, 20000 (dummy)
-        $size2 = Size::skip(7)->first(); // M, dewasa, 30000 (dummy)
+        $size1 = Size::whereHas('category', fn($q) => $q->where('kode', 'anak'))
+                     ->where('nama', 'No 2')->first();
+        $size2 = Size::whereHas('category', fn($q) => $q->where('kode', 'dewasa'))
+                     ->where('nama', 'M')->first();
 
         $response = $this->actingAs($this->user)->postJson('/pesanan', [
             'nama_pembeli' => 'Budi Santoso',
@@ -38,8 +40,8 @@ class SmokeSaveOrderTest extends TestCase
         $kode = $response->json('kode');
         $total_returned = $response->json('total');
 
-        // Manual calc with dummy prices: (2 * 20000) + (1 * 30000) = 40000 + 30000 = 70000
-        $expected_total = 70000;
+        // Harga SPEC: No 2 anak = 36500, M dewasa = 51000
+        $expected_total = (2 * 36500) + (1 * 51000); // 124000
         
         $this->assertEquals($expected_total, $total_returned, "Total tidak sesuai: expected $expected_total, got $total_returned");
 
