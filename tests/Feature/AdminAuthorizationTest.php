@@ -66,4 +66,25 @@ class AdminAuthorizationTest extends TestCase
         ]);
         $this->assertNotEquals(403, $response->getStatusCode());
     }
+
+    public function test_put_harga_with_empty_value_rejected()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        
+        // Get first size ID
+        $sizeId = \App\Models\Size::first()->id;
+        $hargaLama = \App\Models\Size::find($sizeId)->harga;
+        
+        // PUT dengan satu harga kosong
+        $response = $this->actingAs($admin)->put('/admin/harga', [
+            'harga' => [$sizeId => ''],
+        ]);
+        
+        // Assert error 'server' ada
+        $response->assertSessionHasErrors('server');
+        
+        // Assert harga tidak berubah
+        $hargaBaru = \App\Models\Size::find($sizeId)->harga;
+        $this->assertEquals($hargaLama, $hargaBaru);
+    }
 }

@@ -10,6 +10,7 @@ use App\Support\PesanError;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class PesananController extends Controller
 {
@@ -47,9 +48,13 @@ class PesananController extends Controller
 
     public function batal(Request $request, Order $order): RedirectResponse
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'alasan' => 'nullable|string|max:100',
-        ], [], [], ['server' => 'Validasi gagal']);
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors(['server' => $validator->errors()->first()])->withInput();
+        }
         
         try {
             $this->service->batalkan($order, $request->input('alasan'));

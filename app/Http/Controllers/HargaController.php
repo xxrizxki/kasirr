@@ -7,6 +7,8 @@ use App\Models\PriceLog;
 use App\Services\HargaService;
 use App\Support\PesanError;
 use App\Http\Requests\UbahHargaRequest;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 
 class HargaController extends Controller
 {
@@ -40,10 +42,14 @@ class HargaController extends Controller
 
     public function massal(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'category_id' => 'required|exists:categories,id',
             'selisih' => ['required', 'integer', 'not_in:0', 'between:-1000000,1000000'],
-        ], [], [], ['server' => 'Validasi gagal']);
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors(['server' => $validator->errors()->first()])->withInput();
+        }
 
         try {
             $kategori = Category::findOrFail($request->category_id);

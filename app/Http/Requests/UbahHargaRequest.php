@@ -24,8 +24,10 @@ class UbahHargaRequest extends FormRequest
 
     protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
     {
-        $this->redirector->back()
-            ->withErrors(['server' => $validator->errors()->first()])
-            ->withInput();
+        throw new \Illuminate\Http\Exceptions\HttpResponseException(
+            $this->redirector->back()
+                ->withErrors(['server' => $validator->errors()->first()])
+                ->withInput()
+        );
     }
 }
