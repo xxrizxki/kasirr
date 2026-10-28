@@ -6,7 +6,7 @@ use App\Models\Category;
 use App\Models\PriceLog;
 use App\Services\HargaService;
 use App\Support\PesanError;
-use Illuminate\Http\Request;
+use App\Http\Requests\UbahHargaRequest;
 
 class HargaController extends Controller
 {
@@ -20,7 +20,7 @@ class HargaController extends Controller
         return view('admin.harga', compact('kategori', 'logs'));
     }
 
-    public function update(Request $request)
+    public function update(UbahHargaRequest $request)
     {
         $perubahan = [];
         foreach ($request->input('harga', []) as $sizeId => $harga) {
@@ -42,8 +42,8 @@ class HargaController extends Controller
     {
         $request->validate([
             'category_id' => 'required|exists:categories,id',
-            'selisih' => 'required|integer',
-        ]);
+            'selisih' => ['required', 'integer', 'not_in:0', 'between:-1000000,1000000'],
+        ], [], [], ['server' => 'Validasi gagal']);
 
         try {
             $kategori = Category::findOrFail($request->category_id);
