@@ -17,6 +17,28 @@ class RollbackTest extends TestCase
         $this->user = User::factory()->create(['role' => 'admin']);
     }
 
+    protected function buatPesanan($nama = 'Uji', $items = null): Order
+    {
+        if (!$items) {
+            $size1 = Size::whereHas('category', fn($q) => $q->where('kode', 'anak'))
+                         ->where('nama', 'No 2')->first();
+            $size2 = Size::whereHas('category', fn($q) => $q->where('kode', 'dewasa'))
+                         ->where('nama', 'M')->first();
+            $items = [
+                ['size_id' => $size1->id, 'qty' => 2],
+                ['size_id' => $size2->id, 'qty' => 1],
+            ];
+        }
+
+        $response = $this->actingAs($this->user)->postJson('/pesanan', [
+            'nama_pembeli' => $nama,
+            'items' => $items,
+        ]);
+
+        $this->assertTrue($response->json('ok'), 'Gagal membuat pesanan');
+        return Order::where('kode_pesanan', $response->json('kode'))->first();
+    }
+
     public function test_rollback_with_inactive_size()
     {
         $sizeAnak = Size::whereHas('category', fn($q) => $q->where('kode', 'anak'))
