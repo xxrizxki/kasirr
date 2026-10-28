@@ -96,6 +96,9 @@ tr:hover td{background:var(--card2)}
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
 
+/* form di nav */
+nav form{display:inline}
+
 /* tambahan untuk layout Blade dan form admin */
 [x-cloak]{display:none!important}
 a.t{text-decoration:none; display:inline-block}

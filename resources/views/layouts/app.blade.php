@@ -17,7 +17,15 @@
     <a class="t" href="{{ route('kasir') }}" @if(request()->routeIs('kasir')) aria-pressed="true" @endif>Kasir</a>
     <a class="t" href="{{ route('pesanan.index') }}" @if(request()->routeIs('pesanan.*')) aria-pressed="true" @endif>Riwayat</a>
     <a class="t" href="{{ route('laporan') }}" @if(request()->routeIs('laporan')) aria-pressed="true" @endif>Laporan</a>
-    <a class="t" href="{{ route('admin.harga.edit') }}" @if(request()->routeIs('admin.*')) aria-pressed="true" @endif>Admin harga</a>
+    @if(auth()->user()?->isAdmin())
+      <a class="t" href="{{ route('admin.harga.edit') }}" @if(request()->routeIs('admin.*')) aria-pressed="true" @endif>Admin harga</a>
+    @endif
+    @auth
+      <form method="POST" action="{{ route('logout') }}" class="nav-form">
+        @csrf
+        <button type="submit" class="t">Keluar</button>
+      </form>
+    @endauth
   </nav>
 
   @yield('isi')
