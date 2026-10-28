@@ -1,5 +1,18 @@
 @extends('layouts.app')
 @section('isi')
+<form method="GET" class="card" style="margin-bottom:12px">
+  <div class="bt">
+    <input type="date" name="dari" value="{{ request('dari') }}" aria-label="Dari tanggal" placeholder="Dari">
+    <input type="date" name="sampai" value="{{ request('sampai') }}" aria-label="Sampai tanggal" placeholder="Sampai">
+    <select name="status" aria-label="Filter status">
+      <option value="">Semua status</option>
+      <option value="selesai" @selected(request('status') === 'selesai')>Selesai</option>
+      <option value="batal" @selected(request('status') === 'batal')>Batal</option>
+    </select>
+    <button type="submit" class="btn s">Filter</button>
+  </div>
+</form>
+
 @forelse($orders as $o)
   <div class="card" x-data="{ buka: false, yakin: false }">
     <div class="h" @click="buka = !buka">
@@ -28,5 +41,5 @@
 @empty
   <p class="mut">Belum ada pesanan.</p>
 @endforelse
-{{ $orders->links() }}
+{{ $orders->links('vendor.pagination.gamis') }}
 @endsection

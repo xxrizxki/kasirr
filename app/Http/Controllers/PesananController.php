@@ -34,9 +34,16 @@ class PesananController extends Controller
         }
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with('items.size.category')->latest()->paginate(15);
+        $q = Order::with('items.size.category')->latest();
+        
+        if ($request->filled('dari'))   $q->whereDate('created_at', '>=', $request->dari);
+        if ($request->filled('sampai')) $q->whereDate('created_at', '<=', $request->sampai);
+        if (in_array($request->status, ['selesai', 'batal'], true)) $q->where('status', $request->status);
+        
+        $orders = $q->paginate(15)->withQueryString();
+        
         return view('pesanan.index', compact('orders'));
     }
 
