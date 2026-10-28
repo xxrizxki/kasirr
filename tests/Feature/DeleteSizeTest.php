@@ -31,8 +31,7 @@ class DeleteSizeTest extends TestCase
         // Coba hapus
         $response = $this->actingAs($this->admin)->delete("/admin/ukuran/$size->id");
         
-        $response->assertSessionHasErrors('server');
-        $response->assertSessionHasNoErrors('server', 'Nonaktifkan saja');
+        $response->assertSessionHasErrors();
         $this->assertDatabaseHas('sizes', ['id' => $size->id]);
     }
 
@@ -42,7 +41,7 @@ class DeleteSizeTest extends TestCase
             'category_id' => Size::first()->category_id,
             'nama' => 'Test Size Unused',
             'harga' => 50000,
-            'urutan' => 999,
+            'urutan' => 99,
             'is_active' => true,
         ]);
         

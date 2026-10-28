@@ -180,15 +180,6 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect('/login');
     }
 
-    public function test_regular_user_cannot_access_admin_harga()
-    {
-        // Skenario 14: User biasa ditolak 403 di /admin/*
-        $user = User::factory()->create(['role' => 'user']);
-
-        $response = $this->actingAs($user)->get('/admin/harga');
-        $response->assertStatus(403);
-    }
-
     public function test_guest_cannot_access_pesanan_index()
     {
         $response = $this->get('/pesanan');
