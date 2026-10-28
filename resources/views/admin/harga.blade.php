@@ -1,5 +1,10 @@
 @extends('layouts.app')
 @section('isi')
+<div style="margin-bottom:12px">
+  <a href="{{ route('admin.kategori.index') }}" class="t">Kelola kategori</a>
+  <a href="{{ route('admin.ukuran.index') }}" class="t">Kelola ukuran</a>
+</div>
+
 <p class="mut">Ubah harga lalu tekan Simpan. Semua berubah atau tidak sama sekali.</p>
 
 <form method="POST" action="{{ route('admin.harga.update') }}">
@@ -17,6 +22,7 @@
           <input type="hidden" name="aktif[{{ $s->id }}]" value="0">
           <input type="checkbox" name="aktif[{{ $s->id }}]" value="1" @checked($s->is_active)> aktif
         </label>
+        <a href="{{ route('admin.ukuran.riwayat', $s) }}" class="btn g s" style="font-size:.7rem">Riwayat</a>
       </div>
     @endforeach
   @endforeach
