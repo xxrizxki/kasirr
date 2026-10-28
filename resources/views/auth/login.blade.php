@@ -8,41 +8,25 @@
     <h2 style="margin-top:0">Masuk</h2>
     
     @if($errors->has('email'))
-      <div class="note" style="border-left-color:var(--red); color:var(--red)">
-        {{ $errors->first('email') }}
-      </div>
+      <div class="err">{{ $errors->first('email') }}</div>
     @endif
 
-    <form method="POST" action="{{ route('login') }}" style="display:flex; flex-direction:column; gap:12px">
+    <form method="POST" action="{{ route('login') }}">
       @csrf
       
-      <div>
-        <label style="display:block; font-size:.75rem; text-transform:uppercase; letter-spacing:.08em; color:var(--mute); margin-bottom:6px">
-          Email
-        </label>
-        <input 
-          type="email" 
-          name="email" 
-          value="{{ old('email') }}"
-          placeholder="admin@example.com"
-          required
-          autofocus
-        />
-      </div>
+      <label class="fld"><span>Email</span>
+        <input type="email" name="email" value="{{ old('email') }}" placeholder="admin@example.com" required autofocus>
+        @error('email')<div class="err">{{ $message }}</div>@enderror
+      </label>
 
-      <div>
-        <label style="display:block; font-size:.75rem; text-transform:uppercase; letter-spacing:.08em; color:var(--mute); margin-bottom:6px">
-          Sandi
-        </label>
-        <input 
-          type="password" 
-          name="password" 
-          placeholder="••••••"
-          required
-        />
-      </div>
+      <label class="fld"><span>Sandi</span>
+        <input type="password" name="password" placeholder="••••••" required>
+        @error('password')<div class="err">{{ $message }}</div>@enderror
+      </label>
 
-      <button type="submit" class="btn" style="margin-top:8px">Masuk</button>
+      <div class="aksi">
+        <button type="submit" class="btn">Masuk</button>
+      </div>
     </form>
   </div>
 
